@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const AuthPayloadType = require('../../types/AuthPayloadType');
 const User = require('../../../models/User'); // Import the User model
+require('dotenv').config();
 
 const login = {
   type: AuthPayloadType,
@@ -13,8 +14,8 @@ const login = {
   },
   resolve: async (_, { email, password }) => {
     // Check for superadmin credentials
-    if (email === 'admin@gmail.com' && password === 'adminpassword') {
-      const token = jwt.sign({ email, role: 'superadmin' }, 'your_secret_key');
+    if (email === process.env.USER_EMAIL && password === process.env.password) {
+      const token = jwt.sign({ email, role: 'superadmin' }, process.env.JWT_SECRET_KEY);
       return { message: 'Logged in successfully as superadmin', token };
     }
 
@@ -24,7 +25,7 @@ const login = {
       throw new Error('Invalid credentials');
     }
 
-    const token = jwt.sign({ email: user.email, role: user.role }, 'your_secret_key');
+    const token = jwt.sign({ email: user.email, role: user.role }, process.env.JWT_SECRET_KEY);
     return { message: 'Logged in successfully', token };
   }
 };

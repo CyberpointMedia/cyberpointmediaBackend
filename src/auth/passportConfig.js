@@ -1,4 +1,5 @@
 // src/auth/passportConfig.js
+require('dotenv').config();
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
@@ -6,8 +7,8 @@ const bcrypt = require('bcryptjs');
 const users = [
   {
     id: 1,
-    email: 'admin@gmail.com',
-    password: '$2a$10$7QJ8QJ8QJ8QJ8QJ8QJ8QJ8QJ8QJ8QJ8QJ8QJ8QJ8QJ8QJ8QJ8QJ8', // hashed password for 'adminpassword'
+    email: process.env.USER_EMAIL,
+    password: process.env.USER_PASSWORD, // hashed password
   },
 ];
 

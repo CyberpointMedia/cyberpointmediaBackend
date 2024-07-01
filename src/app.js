@@ -8,13 +8,14 @@ const schema = require('./schema');
 const resolvers = require('./resolvers');
 const { login, logout } = require('./auth/authController');
 const PORT = process.env.PORT || 4000;
+require('dotenv').config();
 require('./auth/passportConfig');
 
 const app = express();
 
 app.use(express.json());
 app.use(session({
-  secret: 'your_secret_key',
+  secret: process.env.JWT_SECRET_KEY,
   resave: false,
   saveUninitialized: false,
 }));
@@ -33,7 +34,7 @@ app.use('/graphql', graphqlHTTP((req) => ({
   })));
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/cyberpointmedia', {
+mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   }).then(() => {
