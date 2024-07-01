@@ -1,0 +1,53 @@
+// src/schema/index.js
+const { GraphQLObjectType, GraphQLSchema } = require('graphql');
+const login = require('./mutations/login/login');
+const logout = require('./mutations/logout/logout');
+const createUser = require('./mutations/users/createUser');
+const hello = require('./queries/hello/hello');
+const allUsers = require('./queries/users/allUsers');
+const updateUser = require('./mutations/users/updateUser');
+const getUserById = require('./queries/users/getUserById');
+const deleteUser = require('./mutations/users/deleteUser');
+const createCareer = require('./mutations/careers/createCareer');
+const updateCareer = require('./mutations/careers/updateCareer'); 
+const deleteCareer = require('./mutations/careers/deleteCareer');
+const getCareersByCategory = require('./queries/careers/getCareersByCategory');
+const getCareerById = require('./queries/careers/getCareerById'); 
+const getAllCareers = require('./queries/careers/getAllCareers'); 
+const { get } = require('mongoose');
+
+// Root query type show all users
+const RootQueryType = new GraphQLObjectType({
+    name: 'Query',
+    fields: {
+        hello,
+        allUsers,
+        getUserById,
+        getCareersByCategory,
+        getCareerById,
+        getAllCareers,
+        // Add other queries here
+    }
+});
+// Root mutation type
+const RootMutationType = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        login,
+        logout,
+        createUser,
+        updateUser,
+        deleteUser,
+        createCareer,
+        updateCareer,
+        deleteCareer,
+    }
+});
+
+// Schema
+const schema = new GraphQLSchema({
+    query: RootQueryType,
+    mutation: RootMutationType
+});
+
+module.exports = schema;
