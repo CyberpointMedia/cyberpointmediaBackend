@@ -14,6 +14,8 @@ const deleteCareer = require('./mutations/careers/deleteCareer');
 const getCareersByCategory = require('./queries/careers/getCareersByCategory');
 const getCareerById = require('./queries/careers/getCareerById'); 
 const getAllCareers = require('./queries/careers/getAllCareers'); 
+const {applyJob}= require('./mutations/JobApplications/JobApplications');
+const getAllJobApplications = require('./queries/jobApplications/getAllJobApplications');
 const { get } = require('mongoose');
 
 // Root query type show all users
@@ -26,6 +28,7 @@ const RootQueryType = new GraphQLObjectType({
         getCareersByCategory,
         getCareerById,
         getAllCareers,
+        getAllJobApplications,
         // Add other queries here
     }
 });
@@ -41,6 +44,7 @@ const RootMutationType = new GraphQLObjectType({
         createCareer,
         updateCareer,
         deleteCareer,
+        applyJob,
     }
 });
 
