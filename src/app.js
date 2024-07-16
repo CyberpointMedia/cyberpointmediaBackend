@@ -1,4 +1,4 @@
-// src/server.js
+// src/app.js
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
@@ -21,6 +21,11 @@ app.use(session({
   secret: process.env.JWT_SECRET_KEY,
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24,
+  }
 }));
 
 app.use(passport.initialize());
@@ -42,6 +47,12 @@ app.use('/graphql', graphqlHTTP({
     path: error.path,
   }),
 }));
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
