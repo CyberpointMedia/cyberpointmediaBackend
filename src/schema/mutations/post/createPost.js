@@ -3,9 +3,7 @@ const { GraphQLString, GraphQLNonNull, GraphQLList } = require('graphql');
 const PostType = require('../../types/PostType');
 const Post = require('../../../models/Post');
 const { GraphQLUpload } = require('graphql-upload');
-const { createWriteStream } = require('fs');
 const authMiddleware = require('../../../auth/authMiddleware');
-const path = require('path');
 const { storeUpload } = require('../../../auth/uploadMiddleware');
 
 const createPost = {
