@@ -30,25 +30,38 @@ module.exports = {
       description: { type: GraphQLString }
     },
     async resolve(_, { name, email, cv, linkedin, github, others, phone, description }) {
-      const { createReadStream, filename } = await cv;
-      const stream = createReadStream();
-      const path = await storeUpload({ stream, filename });
+      try {
+        if (!cv && !cv.filename) {
+          throw new Error('CV file is required.');
+        }
 
-      const jobApplication = new JobApplication({
-        name,
-        email,
-        cv: path,
-        linkedin,
-        github,
-        others,
-        phone,
-        description
-      });
+        const { createReadStream, filename, mimetype } = await cv;
+        const validExtensions = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        
+        if (!validExtensions.includes(mimetype)) {
+          throw new Error('Invalid file type. Only PDF and DOC/DOCX files are allowed.');
+        }
 
-      await jobApplication.save();
-      return { message: 'Job application submitted successfully!' };
+        const stream = createReadStream();
+        const filePath = await storeUpload({ stream, filename });
+
+        const jobApplication = new JobApplication({
+          name,
+          email,
+          cv: filePath,
+          linkedin,
+          github,
+          others,
+          phone,
+          description
+        });
+
+        await jobApplication.save();
+        return { message: 'Job application submitted successfully!' };
+      } catch (error) {
+        console.error('Error submitting job application:', error);
+        return { message: `Failed to submit job application. ${error.message}` };
+      }
     }
   }
 };
-
-

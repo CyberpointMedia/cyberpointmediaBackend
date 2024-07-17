@@ -13,7 +13,11 @@ const pageSchema = new Schema({
   searchEngines: [String],
   hsRadioGroup: String,
   metaRobots: String,
-  status: String,
+  status: {
+    type: String,
+    enum: ['published', 'draft', 'archived'],
+    default: 'draft'
+  },
   current_date: { type: Date, default: Date.now },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now }
