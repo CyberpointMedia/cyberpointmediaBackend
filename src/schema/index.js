@@ -24,6 +24,8 @@ const getPageByRouter = require('./queries/page/getPageByRouter');
 const deletePage = require('./mutations/page/deletePage');
 const updatePage = require('./mutations/page/updatePage');
 const createPost = require('./mutations/post/createPost');
+const updatePost = require('./mutations/post/updatePost');
+const deletePost = require('./mutations/post/deletePost');
 
 // Root query type show all users
 const RootQueryType = new GraphQLObjectType({
@@ -59,6 +61,8 @@ const RootMutationType = new GraphQLObjectType({
         deletePage,
         updatePage,
         createPost,
+        deletePost,
+        updatePost,
     }
 });
 

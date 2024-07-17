@@ -24,6 +24,7 @@ const storeUpload = async ({ stream, filename }) => {
   });
 
   const buffer = bufferStream.getContents();
+  console.log('File size:', buffer.length);
   if (buffer.length > maxSize) {
     throw new Error('File size exceeds the 5 MB limit');
   }
