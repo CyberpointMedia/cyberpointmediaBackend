@@ -1,14 +1,26 @@
 // src/auth/authController.js
 const passport = require('passport');
+const User = require('../models/User');
 
-const login = (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
+const login = async (req, res, next) => {
+  passport.authenticate('local', async (err, user, info) => {
     if (err) return next(err);
     if (!user) return res.status(400).json({ message: info.message });
+
+    // Log in the user
     req.logIn(user, (err) => {
       if (err) return next(err);
-      console.log("Logged in successfully");
-      return res.json({ message: 'Logged in successfully' });
+
+      // Fetch user details including role
+      User.findById(user.id, (err, userDetails) => {
+        if (err) return next(err);
+
+        // Log the username and role to the console
+        console.log(`Logged in successfully. Username: ${userDetails.username}, Role: ${userDetails.role}`);
+
+        // Send a success response
+        return res.json({ message: 'Logged in successfully' });
+      });
     });
   })(req, res, next);
 };

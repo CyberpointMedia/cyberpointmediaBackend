@@ -29,7 +29,10 @@ const deletePost = require('./mutations/post/deletePost');
 const getAllPosts = require('./queries/post/getAllPosts');
 const getPostById = require('./queries/post/getPostById');
 const getPostByRouter = require('./queries/post/getPostByRouter');
-
+const getImageById = require('./queries/image/getImageById');
+const getAllImage = require('./queries/image/getAllImage');
+const deleteImage = require('./mutations/image/deleteImage');
+const uploadImage = require('./mutations/image/uploadImage');
 // Root query type show all users
 const RootQueryType = new GraphQLObjectType({
     name: 'Query',
@@ -47,6 +50,8 @@ const RootQueryType = new GraphQLObjectType({
         getAllPosts,
         getPostById,
         getPostByRouter,
+        getAllImage,
+        getImageById,
         // Add other queries here
     }
 });
@@ -69,6 +74,9 @@ const RootMutationType = new GraphQLObjectType({
         createPost,
         deletePost,
         updatePost,
+        deleteImage,
+        uploadImage,
+
     }
 });
 

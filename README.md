@@ -4,10 +4,13 @@ cyberpoint-backend/
 │   │   └── authController.js
 │   │   └── authMiddleware.js
 │   │   └── passportConfig.js
+│   │   └── uploadMiddleware.js
 │   ├── models/
-│   │   └── User.js
 │   │   └── Career.js
 │   │   └── JobApplication.js
+│   │   └── Page.js
+│   │   └── Post.js
+│   │   └── User.js
 │   ├── resolvers/
 │   │   ├── auth/
 │   │   │   ├── login.js
@@ -41,6 +44,14 @@ cyberpoint-backend/
 │   │   │   └── login.js
 │   │   ├── logout/
 │   │   │   └── logout.js
+│   │   ├── page/
+│   │   │   ├── createPage.js
+│   │   │   ├── deletePage.js
+│   │   │   ├── updatePage.js
+│   │   ├── post/
+│   │   │   ├── createPost.js
+│   │   │   ├── deletePost.js
+│   │   │   ├── updatePost.js
 │   │   ├── users/
 │   │   │   ├── createUser.js
 │   │   │   ├── deleteUser.js
@@ -48,20 +59,30 @@ cyberpoint-backend/
 │   ├── queries/
 │   │   ├── hello/
 │   │   │   ├── hello.js
-│   │   ├── users/
-│   │   │   ├── getUserById.js
-│   │   │   └── allUsers.js
 │   │   ├── careers/
 │   │   │   ├── getAllCareers.js
 │   │   │   └── getCareerById.js
 │   │   │   └── getCareerByCategory.js
 │   │   ├── jobApplications/
 │   │   │   ├── getAllJobApplications.js
+│   │   ├── page/
+│   │   │   ├── getAllPages.js
+│   │   │   └── getPageById.js
+│   │   │   └── getPageByRouter.js
+│   │   ├── post/
+│   │   │   ├── getAllPosts.js
+│   │   │   └── getPostById.js
+│   │   │   └── getPostByRouter.js
+│   │   ├── users/
+│   │   │   ├── getUserById.js
+│   │   │   └── allUsers.js
 │   ├── types/
 │   │   ├── AuthPayloadType.js
 │   │   ├── CareerType.js
 │   │   ├── JobApplicationType.js
 │   │   ├── MessageType.js
+│   │   ├── PageType.js
+│   │   ├── PostType.js
 │   │   ├── UserType.js
 │   ├── app.js
 ├── uploads
