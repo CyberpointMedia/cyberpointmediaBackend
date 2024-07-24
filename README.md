@@ -11,22 +11,6 @@ cyberpoint-backend/
 │   │   └── Page.js
 │   │   └── Post.js
 │   │   └── User.js
-│   ├── resolvers/
-│   │   ├── auth/
-│   │   │   ├── login.js
-│   │   │   ├── logout.js
-│   │   ├── careers/
-│   │   │   ├── createCareer.js
-│   │   │   ├── getCareersByCategory.js
-│   │   ├── jobApplications/
-│   │   │   ├── applyJob.js
-│   │   ├── users/
-│   │   │   ├── allUsers.js
-│   │   │   ├── createUser.js
-│   │   │   ├── deleteUser.js
-│   │   │   ├── getUserById.js
-│   │   │   ├── updateUser.js
-│   │   ├── index.js
 │   ├── schema/
 │   │   ├── index.js
 │   ├── mutations/
@@ -34,6 +18,9 @@ cyberpoint-backend/
 │   │   │   ├── createCareer.js
 │   │   │   ├── deleteCareer.js
 │   │   │   ├── updateCareer.js
+│   │   ├── image/
+│   │   │   ├── deleteImage.js
+│   │   │   ├── uploadImage.js
 │   │   ├── JobApplications/
 │   │   │   ├── JobApplications.js
 │   │   ├── users/
@@ -63,6 +50,9 @@ cyberpoint-backend/
 │   │   │   ├── getAllCareers.js
 │   │   │   └── getCareerById.js
 │   │   │   └── getCareerByCategory.js
+│   │   ├── image/
+│   │   │   ├── getAllImage.js
+│   │   │   └── getImageById.js
 │   │   ├── jobApplications/
 │   │   │   ├── getAllJobApplications.js
 │   │   ├── page/
@@ -79,6 +69,7 @@ cyberpoint-backend/
 │   ├── types/
 │   │   ├── AuthPayloadType.js
 │   │   ├── CareerType.js
+│   │   ├── ImageType.js
 │   │   ├── JobApplicationType.js
 │   │   ├── MessageType.js
 │   │   ├── PageType.js

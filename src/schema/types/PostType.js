@@ -1,10 +1,11 @@
 // src/schema/types/PostType.js
-const { GraphQLObjectType, GraphQLString, GraphQLList } = require('graphql');
+const { GraphQLObjectType, GraphQLString,GraphQLID, GraphQLList } = require('graphql');
+const UserType = require('./UserType');
 
 const PostType = new GraphQLObjectType({
   name: 'Post',
   fields: () => ({
-    id: { type: GraphQLString },
+    id: { type: GraphQLID, resolve: (post) => post._id.toString() },
     post_name: { type: GraphQLString },
     post_router: { type: GraphQLString },
     sub_description: { type: GraphQLString },
@@ -12,7 +13,7 @@ const PostType = new GraphQLObjectType({
     feature_img: { type: GraphQLString },
     picture_img: { type: GraphQLString },
     status: { type: GraphQLString },
-    author: { type: GraphQLString },
+    author: { type: UserType },
     seotitle: { type: GraphQLString },
     seometadescription: { type: GraphQLString },
     breadcrumbsTitle: { type: GraphQLString },

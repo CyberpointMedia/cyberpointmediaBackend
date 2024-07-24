@@ -1,13 +1,15 @@
 const { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLID } = require('graphql');
+const UserType = require('./UserType');
 
 const PageType = new GraphQLObjectType({
   name: 'Page',
   fields: () => ({
-    id: { type: GraphQLID },
+    id: { type: GraphQLID, resolve: (page) => page._id.toString() },
     page_name: { type: GraphQLString },
     page_router: { type: GraphQLString },
     sub_description: { type: GraphQLString },
     description: { type: GraphQLString },
+    author: { type: UserType },
     seoTitle: { type: GraphQLString },
     metaDescription: { type: GraphQLString },
     breadcrumbsTitle: { type: GraphQLString },

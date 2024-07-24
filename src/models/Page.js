@@ -1,3 +1,4 @@
+const { auditServer } = require('graphql-http');
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
@@ -6,6 +7,11 @@ const pageSchema = new Schema({
   page_router: { type: String, required: true },
   sub_description: String,
   description: String,
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: 'User', // Reference to the User model
+    required: true
+  },  
   seoTitle: String,
   metaDescription: String,
   breadcrumbsTitle: String,

@@ -2,6 +2,7 @@
 const { GraphQLString, GraphQLNonNull, GraphQLList } = require('graphql');
 const PostType = require('../../types/PostType');
 const Post = require('../../../models/Post');
+const User = require('../../../models/User');
 const { GraphQLUpload } = require('graphql-upload');
 const authMiddleware = require('../../../auth/authMiddleware');
 const { storeUpload } = require('../../../auth/uploadMiddleware');
@@ -16,7 +17,6 @@ const createPost = {
     feature_img: { type: GraphQLUpload },
     picture_img: { type: GraphQLUpload },
     status: { type: GraphQLString },
-    author: { type: new GraphQLNonNull(GraphQLString) },
     seotitle: { type: GraphQLString },
     seometadescription: { type: GraphQLString },
     breadcrumbsTitle: { type: GraphQLString },
@@ -25,9 +25,22 @@ const createPost = {
     hsRadioGroup: { type: GraphQLString },
     metaRobots: { type: GraphQLString }
   },
-  async resolve(_, args, context) {
-    // Ensure user is authenticated
-    authMiddleware(_, args, context);
+  resolve: authMiddleware(async(parent, args, context , info) =>{
+
+    // Check if user is authenticated
+     console.log('context user', context.user);
+     if (!context.user) {
+       throw new Error('User is not authenticated');
+     }
+
+       // Find the user by their email to get their _id
+       const user = await User.findOne({ email: context.user.email });
+       console.log('user', user);
+       if (!user) {
+         throw new Error('User not found');
+       }
+
+
     const { post_name, feature_img, picture_img } = args;
     try {
     // Check if post_name is unique
@@ -54,6 +67,7 @@ const createPost = {
     const newPost = new Post({
       ...args,
       post_router,
+      author: user._id ,
       feature_img: feature_img_path,
       picture_img: picture_img_path,
       created_at: new Date(),
@@ -61,11 +75,19 @@ const createPost = {
       updated_date: new Date()
     });
 
-    return newPost.save();
+    const savedPost = await newPost.save();
+     // Fetch the full user details
+     const fullUserDetails = await User.findById(user._id);
+     // Return the saved page with full author details
+    return {
+      ...savedPost._doc,
+      author: fullUserDetails
+    };
+
 } catch (error) {
     throw new Error(`Failed to create post: ${error.message}`);
   }
-  }
+  })
 };
 
 module.exports = createPost;

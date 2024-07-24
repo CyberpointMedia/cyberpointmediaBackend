@@ -31,7 +31,8 @@ const postSchema = new Schema({
     default: 'draft'
   },
   author: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: 'User',
     required: true
   },
   seotitle: {

@@ -1,6 +1,7 @@
 const { GraphQLString, GraphQLNonNull, GraphQLID, GraphQLList } = require('graphql');
 const PostType = require('../../types/PostType');
 const Post = require('../../../models/Post');
+const User = require('../../../models/User');
 const { GraphQLUpload } = require('graphql-upload');
 const authMiddleware = require('../../../auth/authMiddleware');
 const { storeUpload } = require('../../../auth/uploadMiddleware');
@@ -16,7 +17,6 @@ const updatePost = {
     feature_img: { type: GraphQLUpload },
     picture_img: { type: GraphQLUpload },
     status: { type: GraphQLString },
-    author: { type: GraphQLString },
     seotitle: { type: GraphQLString },
     seometadescription: { type: GraphQLString },
     breadcrumbsTitle: { type: GraphQLString },
@@ -25,9 +25,19 @@ const updatePost = {
     hsRadioGroup: { type: GraphQLString },
     metaRobots: { type: GraphQLString }
   },
-  async resolve(_, args, context) {
+  resolve :authMiddleware (async(parent, args, context ,info) => {
+    console.log('context user', context.user);
     // Ensure user is authenticated
-    authMiddleware(_, args, context);
+    if (!context.user) {
+      throw new Error('User is not authenticated');
+    }
+
+    // Find the user by their email to get their _id
+    const user = await User.findOne({ email: context.user.email });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    // Ensure user is authenticated
     const { id, post_name, feature_img, picture_img } = args;
 
     try {
@@ -45,7 +55,6 @@ const updatePost = {
       if (args.sub_description) post.sub_description = args.sub_description;
       if (args.description) post.description = args.description;
       if (args.status) post.status = args.status;
-      if (args.author) post.author = args.author;
       if (args.seotitle) post.seotitle = args.seotitle;
       if (args.seometadescription) post.seometadescription = args.seometadescription;
       if (args.breadcrumbsTitle) post.breadcrumbsTitle = args.breadcrumbsTitle;
@@ -69,11 +78,28 @@ const updatePost = {
       post.updated_at = new Date();
       post.updated_date = new Date();
 
-      return post.save();
-    } catch (error) {
-      throw new Error(`Failed to update post: ${error.message}`);
-    }
-  }
+       // Save the updated post to the database
+       const updatedPost = await post.save();
+
+     // Fetch full user details for the author
+     const fullUserDetails = await User.findById(user._id);
+     console.log('fullUserDetails', fullUserDetails);
+
+     // Return the updated post with full author details
+     return {
+       ...updatedPost._doc,
+       author: fullUserDetails ? {
+         _id: fullUserDetails._id.toString(),
+         username: fullUserDetails.username,
+         email: fullUserDetails.email,
+         website: fullUserDetails.website,
+         role: fullUserDetails.role
+       } : null
+     };
+   } catch (error) {
+     throw new Error(`Failed to update post: ${error.message}`);
+   }
+ })
 };
 
 module.exports = updatePost;
