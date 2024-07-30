@@ -2,6 +2,7 @@
 const { GraphQLNonNull, GraphQLID, GraphQLString, GraphQLList } = require('graphql');
 const CareerType = require('../../types/CareerType');
 const Career = require('../../../models/Career');
+const authMiddleware = require('../../../auth/authMiddleware');
 
 const updateCareer = {
   type: CareerType,
@@ -14,7 +15,7 @@ const updateCareer = {
     description: { type: GraphQLString },
     category: { type: GraphQLString }
   },
-  resolve: async (_, { id, name, skills, location, experience, description, category }) => {
+  resolve: authMiddleware(async (_, { id, name, skills, location, experience, description, category }) => {
     try {
     const updatedCareer = await Career.findByIdAndUpdate(
       id,
@@ -28,7 +29,7 @@ const updateCareer = {
 } catch (error) {
     throw new Error(`Failed to update career: ${error.message}`);
   }
-}
+})
 };
 
 module.exports = updateCareer;

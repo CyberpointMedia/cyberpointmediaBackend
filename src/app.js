@@ -15,6 +15,10 @@ require('./auth/passportConfig');
 
 const app = express();
 app.use(cors());
+app.use((req, res, next) => {
+  console.log (`Request: ${req} ${res}`);
+  next();
+});
 
 app.use(express.json());
 app.use(session({
@@ -22,6 +26,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
+    name: 'token',
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24,
@@ -37,11 +42,14 @@ app.post('/logout', logout);
 app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
 
 // Set up GraphQL endpoint
-app.use('/graphql', graphqlHTTP((req) => ({
+app.use('/graphql', graphqlHTTP((req,res) => ({
   schema: schema,
   graphiql: true,
   context: {
-    user: req.user
+    req,
+    res,
+    user: req.user,
+    headers: req.headers,
   },
   customFormatErrorFn: (error) => ({
     message: error.message,
@@ -49,7 +57,6 @@ app.use('/graphql', graphqlHTTP((req) => ({
     stack: error.stack ? error.stack.split('\n') : [],
     path: error.path,
   }),
-  context: { headers: req.headers } 
 })));
 
 // Error handling middleware

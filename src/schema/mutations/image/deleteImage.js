@@ -1,5 +1,6 @@
 const { GraphQLString, GraphQLNonNull } = require('graphql');
 const AWS = require('aws-sdk');
+const authMiddleware = require('../../../auth/authMiddleware');
 
 const s3 = new AWS.S3({
   accessKeyId: process.env.YOUR_AWS_ACCESS_KEY_ID,
@@ -12,7 +13,7 @@ const deleteImageMutation = {
   args: {
     id: { type: new GraphQLNonNull(GraphQLString) }
   },
-  resolve: async (_, { id }) => {
+  resolve: authMiddleware(async (_, { id }) => {
     const params = {
       Bucket: process.env.YOUR_AWS_BUCKET_NAME,
       Key: `uploads/${id}`
@@ -24,7 +25,7 @@ const deleteImageMutation = {
     } catch (error) {
       throw new Error(`Failed to delete image: ${error.message}`);
     }
-  }
+  })
 };
 
 module.exports = deleteImageMutation;

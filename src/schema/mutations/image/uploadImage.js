@@ -1,13 +1,14 @@
 const { GraphQLUpload } = require('graphql-upload');
 const { storeUpload } = require('../../../auth/uploadMiddleware'); // Ensure this path is correct
 const ImageType = require('../../types/ImageType');
+const authMiddleware = require('../../../auth/authMiddleware');
 
 const uploadImageMutation = {
   type: ImageType,
   args: {
     file: { type: GraphQLUpload }
   },
-  resolve: async (_, { file }) => {
+  resolve: authMiddleware(async (_, { file }) => {
     const { createReadStream, filename } = await file;
 
     try {
@@ -19,7 +20,7 @@ const uploadImageMutation = {
     } catch (error) {
       throw new Error(`Failed to upload file: ${error.message}`);
     }
-  }
+  })
 };
 
 module.exports = uploadImageMutation;

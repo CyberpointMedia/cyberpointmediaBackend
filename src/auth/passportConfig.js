@@ -16,7 +16,11 @@ passport.use(new LocalStrategy({
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
-      return done(null, user);
+      console.log(`Logged out in successfully. Username: ${user.username}, Role: ${user.role}`);
+      console.log('Token: ', token);
+      // Generate a JWT token with a short expiry time
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: '1s' });
+      return done(null, { user, token });
     } else {
       return done(null, false, { message: 'Incorrect password.' });
     }

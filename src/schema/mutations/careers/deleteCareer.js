@@ -2,13 +2,14 @@
 const { GraphQLNonNull, GraphQLID } = require('graphql');
 const CareerType = require('../../types/CareerType');
 const Career = require('../../../models/Career');
+const authMiddleware = require('../../../auth/authMiddleware');
 
 const deleteCareer = {
     type: CareerType,
     args: {
         id: { type: new GraphQLNonNull(GraphQLID) }
     },
-    resolve: async (_, { id }) => {
+    resolve: authMiddleware(async (_, { id }) => {
         try {
             const career = await Career.findByIdAndDelete(id);
             if (!career) {
@@ -20,7 +21,7 @@ const deleteCareer = {
             console.error(error);
             throw new Error('Failed to delete career');
         }
-    }
+    })
 };
 
 module.exports = deleteCareer;
