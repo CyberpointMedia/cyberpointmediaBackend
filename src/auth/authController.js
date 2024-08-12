@@ -1,5 +1,6 @@
 // src/auth/authController.js
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const login = async (req, res, next) => {
@@ -10,18 +11,17 @@ const login = async (req, res, next) => {
     // Log in the user
     req.logIn(user, async (err) => {
       if (err) return next(err);
-
       try {
         // Fetch user details including role
-        const userDetails = await User.findById(user.id);
-
+        const userDetails = await User.findById(user._id);
+        // Generate a JWT token with a short expiry time
+        const token = jwt.sign({ id: userDetails._id, role: userDetails.role }, process.env.JWT_SECRET_KEY, { expiresIn: '1s' });
         // Log the username and role to the console
         console.log(`Logged in successfully. Username: ${userDetails.username}, Role: ${userDetails.role}`);
-
-        // Send a success response
+        console.log('Token: ', token);
+        // Send a success response with the token
         res.cookie('user', { id: userDetails.id, role: userDetails.role }, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-
-        return res.json({ message: 'Logged in successfully' });
+        return res.json({ message: 'Logged in successfully (authcontroller)', token });
       } catch (err) {
         return next(err);
       }
@@ -37,7 +37,7 @@ const logout = (req, res) => {
     res.clearCookie('user');
 
     console.log("Logged out successfully");
-    res.json({ message: 'Logged out successfully' });
+    res.json({ message: 'Logged out successfully ( (authcontroller))' });
   });
 };
 
@@ -45,4 +45,3 @@ module.exports = {
   login,
   logout,
 };
-

@@ -9,17 +9,42 @@ const cors = require('cors');
 const schema = require('./schema');
 const User = require('./models/User');
 const { login, logout } = require('./auth/authController');
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const slowDown = require('express-slow-down'); 
+const xss = require('xss-clean');
 require('dotenv').config();
 require('./auth/passportConfig');
 
 const app = express();
-app.use(cors());
+
+// Security middleware
+app.use(helmet());
+app.use(xss());
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
+// Slow down
+const speedLimiter = slowDown({
+  windowMs: 5 * 60 * 1000, // 15 minutes
+  delayAfter: 100, // allow 100 requests per 15 minutes, then...
+  delayMs: 500, // begin adding 500ms of delay per request above 100
+});
+app.use(speedLimiter);
+
+
 app.use((req, res, next) => {
   console.log (`Request: ${req} ${res}`);
   next();
 });
 
+app.use(cors());
 app.use(express.json());
 app.use(session({
   secret: process.env.JWT_SECRET_KEY,
@@ -29,6 +54,7 @@ app.use(session({
     name: 'token',
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
+    sameSite: 'strict',
     maxAge: 1000 * 60 * 60 * 24,
   }
 }));

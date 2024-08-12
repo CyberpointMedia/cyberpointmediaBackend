@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const AuthPayloadType = require('../../types/AuthPayloadType');
 const User = require('../../../models/User'); // Import the User model
+const Dashboard = require('../../../models/Dashboard'); // Import the Dashboard model
 require('dotenv').config();
 
 const login = {
@@ -12,7 +13,9 @@ const login = {
     email: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: new GraphQLNonNull(GraphQLString) }
   },
-  resolve: async (_, { email, password }) => {
+  resolve: async (_, { email, password }, context) => {
+    const { req } = context;
+    console.log('Request:', req);
     // Check for superadmin credentials
     if (email === process.env.USER_EMAIL && password === process.env.password) {
       const token = jwt.sign({ email, role: 'superadmin' }, process.env.JWT_SECRET_KEY);
@@ -26,7 +29,16 @@ const login = {
     }
 
     const token = jwt.sign({ email: user.email, role: user.role }, process.env.JWT_SECRET_KEY);
-    return { message: 'Logged in successfully', token };
+   
+    // Log the login time and location to the Dashboard
+    const dashboardEntry = new Dashboard({
+      user: user.id,
+      loginTime: new Date(),
+      location: req.ip // or another way to get the user's location
+    });
+    await dashboardEntry.save();
+
+    return { message: 'Logged in successfully', token ,dashboardEntry};
   }
 };
 module.exports = login;

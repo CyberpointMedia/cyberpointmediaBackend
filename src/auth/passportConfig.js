@@ -4,6 +4,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
 passport.use(new LocalStrategy({
   usernameField: 'email',
@@ -16,11 +17,12 @@ passport.use(new LocalStrategy({
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
+
       console.log(`Logged out in successfully. Username: ${user.username}, Role: ${user.role}`);
+      const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET_KEY, { expiresIn: '1s' });
       console.log('Token: ', token);
-      // Generate a JWT token with a short expiry time
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: '1s' });
-      return done(null, { user, token });
+      //Generate a JWT token with a short expiry time
+      return done(null, { user });
     } else {
       return done(null, false, { message: 'Incorrect password.' });
     }
@@ -30,7 +32,7 @@ passport.use(new LocalStrategy({
 }));
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  done(null, user._id);
 });
 
 passport.deserializeUser(async (id, done) => {
