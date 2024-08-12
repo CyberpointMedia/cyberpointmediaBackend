@@ -12,7 +12,6 @@ const { login, logout } = require('./auth/authController');
 const PORT = process.env.PORT || 5000;
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const slowDown = require('express-slow-down'); 
 const xss = require('xss-clean');
 require('dotenv').config();
 require('./auth/passportConfig');
@@ -29,15 +28,6 @@ const limiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
 });
 app.use(limiter);
-
-// Slow down
-const speedLimiter = slowDown({
-  windowMs: 5 * 60 * 1000, // 15 minutes
-  delayAfter: 100, // allow 100 requests per 15 minutes, then...
-  delayMs: 500, // begin adding 500ms of delay per request above 100
-});
-app.use(speedLimiter);
-
 
 app.use((req, res, next) => {
   console.log (`Request: ${req} ${res}`);
