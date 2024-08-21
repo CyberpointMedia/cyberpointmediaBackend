@@ -9,6 +9,7 @@ const cors = require('cors');
 const schema = require('./schema');
 const User = require('./models/User');
 const { login, logout } = require('./auth/authController');
+const getAll = require('./auth/getAll');
 const PORT = process.env.PORT || 5000;
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -54,6 +55,7 @@ app.use(passport.session());
 
 app.post('/login', login);
 app.post('/logout', logout);
+app.post('/get', getAll);
 
 app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
 
@@ -92,10 +94,12 @@ mongoose.connect(process.env.MONGODB_URI, {
     const user = await User.findOne({ email: process.env.USER_EMAIL });
 
     if (user) {
-      console.log('Admin user already exists');
+      console.log('user 1',process.env.USERNAME );
+      console.log('Admin user already exists', user);
     } else {
+      console.log('user',process.env.USERNAME );
       const adminUser = new User({
-        username: process.env.USERNAME,
+        username: 'adminuser',
         email: process.env.USER_EMAIL,
         password: process.env.password,
         website: process.env.website,
@@ -103,7 +107,7 @@ mongoose.connect(process.env.MONGODB_URI, {
       });
 
       await adminUser.save();
-      console.log('Admin user created successfully');
+      console.log('Admin user created successfully', adminUser);
     }
 
     // Start the server after ensuring the admin user exists

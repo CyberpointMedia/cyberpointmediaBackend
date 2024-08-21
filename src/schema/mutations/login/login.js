@@ -4,7 +4,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const AuthPayloadType = require('../../types/AuthPayloadType');
 const User = require('../../../models/User'); // Import the User model
-const Dashboard = require('../../../models/Dashboard'); // Import the Dashboard model
+const Dashboard = require('../../../models/Dashboard'); 
+const { getGeoLocation, getAddressFromCoordinates } = require('../dashboard/dashboard'); 
 require('dotenv').config();
 
 const login = {
@@ -18,8 +19,8 @@ const login = {
     console.log('Request:', req);
     // Check for superadmin credentials
     if (email === process.env.USER_EMAIL && password === process.env.password) {
-      const token = jwt.sign({ email, role: 'superadmin' }, process.env.JWT_SECRET_KEY);
-      return { message: 'Logged in successfully as superadmin', token };
+      const token = jwt.sign({ email, role: 'admin' }, process.env.JWT_SECRET_KEY);
+      return { message: 'Logged in successfully as superadmin ', token };
     }
 
     // Search in the database for the user
@@ -30,11 +31,14 @@ const login = {
 
     const token = jwt.sign({ email: user.email, role: user.role }, process.env.JWT_SECRET_KEY);
    
+    const ip= req.ip;
+    const {lat,lon,city,country}=await getGeoLocation(ip);
+    const location = await getAddressFromCoordinates(lat, lon);
     // Log the login time and location to the Dashboard
     const dashboardEntry = new Dashboard({
       user: user.id,
       loginTime: new Date(),
-      location: req.ip // or another way to get the user's location
+      location:  `${city}, ${country} - ${location}`, // or another way to get the user's location
     });
     await dashboardEntry.save();
 

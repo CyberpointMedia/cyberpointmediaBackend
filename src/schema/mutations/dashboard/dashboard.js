@@ -11,12 +11,15 @@ async function getGeoLocation(ip) {
         if (ip === '::1' || ip === '127.0.0.1') {
             // const externalIpResponse = await axios.get('https://api64.ipify.org?format=json');
             // ip = externalIpResponse.data.ip;
-            ip = '8.8.8.8'; // Google's public DNS IP address
+            ip = '103.251.142.10'; // Google's public DNS IP address
         }
 
         const response = await axios.get(`http://ip-api.com/json/${ip}`);
         const data = response.data;
 
+        if (data.status === 'fail'){
+            throw new Error('Failed to get geolocation from IP address');
+        }
         return {
             lat: data.lat,
             lon: data.lon,
@@ -87,6 +90,8 @@ const logLogout = {
 };
 
 module.exports = {
+    getGeoLocation,
+    getAddressFromCoordinates,
     logLogin,
-    logLogout,
+    logLogout
 };
