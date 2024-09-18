@@ -20,7 +20,7 @@ const login = {
     // Check for superadmin credentials
     if (email === process.env.USER_EMAIL && password === process.env.password) {
       const token = jwt.sign({ email, role: 'admin' }, process.env.JWT_SECRET_KEY);
-      return { message: 'Logged in successfully as superadmin ', token };
+      return { message: 'Logged in successfully as superadmin ', token , role: 'admin'};
     }
 
     // Search in the database for the user
@@ -30,10 +30,27 @@ const login = {
     }
 
     const token = jwt.sign({ email: user.email, role: user.role }, process.env.JWT_SECRET_KEY);
-   
-    const ip= req.ip;
-    const {lat,lon,city,country}=await getGeoLocation(ip);
-    const location = await getAddressFromCoordinates(lat, lon);
+    
+    // Initialize default location information in case geolocation fails
+     let location = 'Location unknown';
+     let city = 'N/A';
+     let country = 'N/A';
+ 
+
+     // Try to get the geolocation from the IP address
+     try {
+      const ip = req.ip;
+      const geoData = await getGeoLocation(ip);
+      if (geoData) {
+        const { lat, lon, city: geoCity, country: geoCountry } = geoData;
+        city = geoCity || 'Unknown City';
+        country = geoCountry || 'Unknown Country';
+        location = await getAddressFromCoordinates(lat, lon);
+      }
+    } catch (error) {
+      console.error('Error fetching geolocation:', error);
+      // Geolocation failed, continue with default location information
+    }
     // Log the login time and location to the Dashboard
     const dashboardEntry = new Dashboard({
       user: user.id,
@@ -42,7 +59,7 @@ const login = {
     });
     await dashboardEntry.save();
 
-    return { message: 'Logged in successfully', token ,dashboardEntry};
+    return { message: 'Logged in successfully', token , role: user.role, dashboardEntry};
   }
 };
 module.exports = login;

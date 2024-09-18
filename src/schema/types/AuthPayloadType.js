@@ -5,7 +5,8 @@ const AuthPayloadType = new GraphQLObjectType({
   name: 'AuthPayload',
   fields: {
     message: { type: GraphQLString },
-    token: { type: GraphQLString }
+    token: { type: GraphQLString },
+    role: { type: GraphQLString },
   }
 });
 
