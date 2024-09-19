@@ -34,7 +34,7 @@ const getAllImage = require('./queries/image/getAllImage');
 const deleteImage = require('./mutations/image/deleteImage');
 const uploadImage = require('./mutations/image/uploadImage');
 const {logLogin, logLogout} = require('./mutations/dashboard/dashboard');
-const {getUserLogs} = require('./queries/dashboard/dashboard');
+const {getUserLogs, getTotalLoggedInUsers ,getTotalActiveUsers } = require('./queries/dashboard/dashboard');
 // Root query type show all users
 const RootQueryType = new GraphQLObjectType({
     name: 'Query',
@@ -55,6 +55,8 @@ const RootQueryType = new GraphQLObjectType({
         getAllImage,
         getImageById,
         getUserLogs,
+        getTotalLoggedInUsers,
+        getTotalActiveUsers,
         // Add other queries here
     }
 });
@@ -81,7 +83,6 @@ const RootMutationType = new GraphQLObjectType({
         uploadImage,
         logLogin,
         logLogout,
-
     }
 });
 
